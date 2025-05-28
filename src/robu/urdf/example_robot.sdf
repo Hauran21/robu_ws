@@ -1,0 +1,299 @@
+<sdf version='1.7'>
+  <model name='robot'>
+    <joint name='base_to_world' type='fixed'>
+      <pose relative_to='__model__'>0 0 0 0 -0 0</pose>
+      <parent>world</parent>
+      <child>base</child>
+    </joint>
+    <link name='base'>
+      <pose relative_to='base_to_world'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.05 0 -0 0</pose>
+        <mass>12</mass>
+        <inertia>
+          <ixx>2.26</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.26</iyy>
+          <iyz>0</iyz>
+          <izz>8.5</izz>
+        </inertia>
+      </inertial>
+      <collision name='base_collision'>
+        <pose>0 0 2.1 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>2.5 4.2 2.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='base_visual'>
+        <pose>0 0 0 1.5708 -0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>0.01 0.01 0.01</scale>
+            <uri>model://robu/urdf/Z_Achse.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <force_color>1</force_color>
+    </link>
+    <joint name='z_Achse_to_base' type='prismatic'>
+      <pose relative_to='base'>0 0 0 0 -0 0</pose>
+      <parent>base</parent>
+      <child>z_achse</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>0.5</lower>
+          <upper>3.03</upper>
+          <effort>100</effort>
+          <velocity>0.1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='z_achse'>
+      <pose relative_to='z_Achse_to_base'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.05 0 -0 0</pose>
+        <mass>12</mass>
+        <inertia>
+          <ixx>2.26</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.26</iyy>
+          <iyz>0</iyz>
+          <izz>8.5</izz>
+        </inertia>
+      </inertial>
+      <visual name='z_achse_visual'>
+        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.01 0.01 0.01</scale>
+            <uri>model://robu/urdf/1_Arm.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+      <force_color>1</force_color>
+    </link>
+    <joint name='z_achse_to_1_arm' type='revolute'>
+      <pose relative_to='z_achse'>0 1 -0.35 0 -0 0</pose>
+      <parent>z_achse</parent>
+      <child>1_arm</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1.5</lower>
+          <upper>1.5</upper>
+          <effort>100</effort>
+          <velocity>0.1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='1_arm'>
+      <pose relative_to='z_achse_to_1_arm'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.05 0 -0 0</pose>
+        <mass>12</mass>
+        <inertia>
+          <ixx>2.26</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.26</iyy>
+          <iyz>0</iyz>
+          <izz>8.5</izz>
+        </inertia>
+      </inertial>
+      <collision name='1_arm_collision'>
+        <pose>0 1 0.65 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>1 1.35 3.25</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='1_arm_visual'>
+        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.01 0.01 0.01</scale>
+            <uri>model://robu/urdf/2_Arm.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='1_achse_to_2_arm' type='revolute'>
+      <pose relative_to='1_arm'>0 2.3 1.15 0 -0 0</pose>
+      <parent>1_arm</parent>
+      <child>2_arm</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-2</lower>
+          <upper>2</upper>
+          <effort>100</effort>
+          <velocity>0.1</velocity>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='2_arm'>
+      <pose relative_to='1_achse_to_2_arm'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.05 0 -0 0</pose>
+        <mass>12</mass>
+        <inertia>
+          <ixx>2.26</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.26</iyy>
+          <iyz>0</iyz>
+          <izz>8.5</izz>
+        </inertia>
+      </inertial>
+      <collision name='2_arm_collision'>
+        <pose>0 1.4 0.2 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>1 0.7 2.5</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='2_arm_visual'>
+        <pose>0 0 0 -1.5708 -0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.01 0.01 0.01</scale>
+            <uri>model://robu/urdf/3_Arm.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <joint name='2_achse_to_greifer' type='revolute'>
+      <pose relative_to='2_arm'>0 2.2 -0.19 0 -0 0</pose>
+      <parent>2_arm</parent>
+      <child>greifer</child>
+      <axis>
+        <xyz>0 0 1</xyz>
+        <limit>
+          <lower>-1e+16</lower>
+          <upper>1e+16</upper>
+        </limit>
+        <dynamics>
+          <spring_reference>0</spring_reference>
+          <spring_stiffness>0</spring_stiffness>
+        </dynamics>
+      </axis>
+    </joint>
+    <link name='greifer'>
+      <pose relative_to='2_achse_to_greifer'>0 0 0 0 -0 0</pose>
+      <inertial>
+        <pose>0 0 0.05 0 -0 0</pose>
+        <mass>12</mass>
+        <inertia>
+          <ixx>2.26</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>6.26</iyy>
+          <iyz>0</iyz>
+          <izz>8.5</izz>
+        </inertia>
+      </inertial>
+      <collision name='greifer_collision'>
+        <pose>0 0 -0.47 1.5708 -0 0</pose>
+        <geometry>
+          <box>
+            <size>0.75 1 1</size>
+          </box>
+        </geometry>
+        <surface>
+          <contact>
+            <ode/>
+          </contact>
+          <friction>
+            <ode/>
+          </friction>
+        </surface>
+      </collision>
+      <visual name='greifer_visual'>
+        <pose>0 0 0 1.5708 -0 -1.5708</pose>
+        <geometry>
+          <mesh>
+            <scale>0.01 0.01 0.01</scale>
+            <uri>model://robu/urdf/Greiferneu.stl</uri>
+          </mesh>
+        </geometry>
+        <material>
+          <script>
+            <name>Gazebo/Green</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
+      </visual>
+    </link>
+    <static>0</static>
+    <plugin name='gazebo_ros_joint_pose_trajectory' filename='libgazebo_ros_joint_pose_trajectory.so'>
+      <update_rate>20</update_rate>
+    </plugin>
+  </model>
+</sdf>
