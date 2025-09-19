@@ -2,6 +2,8 @@ from rclpy.node import Node
 import rclpy
 from std_msgs.msg import Float32
 import random
+from rclpy.parameter import Parameter
+from rcl_interfaces.msg import SetParametersResult
 
 class TempSensorNode(Node):
     def __init__(self, node_name: str):
@@ -19,26 +21,33 @@ class TempSensorNode(Node):
 
         self._hz = self.get_parameter("hz").get_parameter_value().double_value
         self._mean = self.get_parameter("mean").get_parameter_value().double_value
-        self._amp = self.get_parameter("amp").get_parameter_value().double_value
+        self._amp = self.get_parameter("amp").get_parameter_value().double_value#
+        
+
         
         # Sobalt Parameter geaendert werden, wird die Callback Funktion aufgerufen
-        self.add_on_set_parameters_callback(self.on_parameter_change)
+        self.add_on_set_parameters_callback(self.on_parameter_set_cb)
         
         self._timer_temperatur = self.create_timer(1.0/self._hz, self.timer_temperatur_cb)
 
     def timer_temperatur_cb(self):
         val = Float32()
         
-        # Update Values in case parameters changed
-        self._hz = self.get_parameter("hz").get_parameter_value().double_value
-        self._mean = self.get_parameter("mean").get_parameter_value().double_value
-        self._amp = self.get_parameter("amp").get_parameter_value().double_value
+        # wird jetzt in der Callback Funktion gemacht
+        #self._hz = self.get_parameter("hz").get_parameter_value().double_value
+        #self._mean = self.get_parameter("mean").get_parameter_value().double_value
+        #self._amp = self.get_parameter("amp").get_parameter_value().double_value
         
         val.data = random.uniform(self._mean-self._amp,self._mean+self._amp)
         self._pub_temperatur.publish(val)
         
-    def on_parameter_change(self , param):
-        self.get_logger().info("Parameter wurden geaendert!")
+    def on_parameter_set_cb(self , param:list[Parameter]):
+        for p in param: 
+            if p.name == 'hz': self._hz = float(p.value)
+            elif p.name == 'mean': self._mean = float(p.value)
+            elif p.name == 'amp': self._amp = float(p.value)
+        
+        return SetParametersResult(successful=True) 
 
     def destroy_node(self):
         return super().destroy_node()

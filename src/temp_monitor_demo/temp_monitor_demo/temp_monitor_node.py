@@ -1,6 +1,8 @@
 from rclpy.node import Node
 import rclpy
 from std_msgs.msg import Float32, String
+from rclpy.parameter import Parameter 
+from rcl_interfaces.msg import SetParametersResult
 
 class TempMonitorNode(Node):
     def __init__(self, node_name: str):
@@ -12,14 +14,22 @@ class TempMonitorNode(Node):
                 ("threshold", 27.0),
             ]
         )
-        
         self._threshold = self.get_parameter("threshold").get_parameter_value().double_value
         
         self.create_subscription(Float32, 'temperature', self._sub_temperatur_cb, 10)
         
-        self._pub_temperatur_alert = self.create_publisher(String, 'temperatur_alert', 10)
+        self.add_on_set_parameters_callback(self._on_param_set_cb)
+        
+        self._pub_temperatur_alert = self.create_publisher(String, 'temperature_alert', 10)
+        
+    def _on_param_set_cb(self, param:list[Parameter]):
+        for p in param:
+            if p.name == 'threshold':
+                self._threshold = float(p.value)
+        
+        return SetParametersResult(successful=True) 
     
-    def _sub_temperatur_cb(self, msg:Float32):
+    def _sub_temperatur_cb(self, msg: Float32):    
         val_temp = msg.data
         
         self.get_logger().info(f"Aktuelle Temperatur: {val_temp:.2f}")
