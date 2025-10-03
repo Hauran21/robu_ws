@@ -43,7 +43,10 @@ class TempSensorNode(Node):
         
     def on_parameter_set_cb(self , param:list[Parameter]):
         for p in param: 
-            if p.name == 'hz': self._hz = float(p.value)
+            if p.name == 'hz': 
+                self._hz = float(p.value)
+                self._timer_temperatur.cancel()
+                self._timer_temperatur = self.create_timer(1.0/self._hz, self.timer_temperatur_cb)
             elif p.name == 'mean': self._mean = float(p.value)
             elif p.name == 'amp': self._amp = float(p.value)
         

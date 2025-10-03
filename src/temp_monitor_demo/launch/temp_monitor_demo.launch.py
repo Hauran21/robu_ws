@@ -12,6 +12,14 @@ def generate_launch_description():
     arg_hz = DeclareLaunchArgument('hz', 
                                       default_value='1.0', 
                                       description='Sampling rate in Hz')    
+    
+    arg_mean = DeclareLaunchArgument('mean', 
+                                      default_value='25.0', 
+                                      description='Mean temperature value') 
+    
+    arg_amp = DeclareLaunchArgument('amp', 
+                                      default_value='5.0', 
+                                      description='Amplitude of temperature variations')        
 
     temp_monitor_node = Node(
         package='temp_monitor_demo',
@@ -19,8 +27,8 @@ def generate_launch_description():
         name='temp_monitor',
         parameters=[{
             'hz': LaunchConfiguration('hz'),
-            #'mean': LaunchConfiguration('25.0'),
-            #'amp': LaunchConfiguration('5.0'),
+            'mean': LaunchConfiguration('mean'),
+            'amp': LaunchConfiguration('amp'),
         }]
     )
     
@@ -36,6 +44,8 @@ def generate_launch_description():
     ld = LaunchDescription()
     ld.add_action(arg_threshold)
     ld.add_action(arg_hz)
+    ld.add_action(arg_mean)
+    ld.add_action(arg_amp)
     
     ld.add_action(temp_monitor_node)
     ld.add_action(temp_sensor_node)
