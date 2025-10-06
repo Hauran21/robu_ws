@@ -1,8 +1,6 @@
 from setuptools import find_packages, setup
-import os 
-from glob import glob
 
-package_name = 'temp_monitor_demo'
+package_name = 'example_add'
 
 setup(
     name=package_name,
@@ -12,7 +10,6 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -20,11 +17,15 @@ setup(
     maintainer_email='your_email@example.com',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
+    extras_require={
+        'test': [
+            'pytest',
+        ],
+    },
     entry_points={
         'console_scripts': [
-            'temp_sensor = temp_monitor_demo.temp_sendor_node:main',
-            'temp_monitor = temp_monitor_demo.temp_monitor_node:main',
+            'add_two_ints_service = example_add.example_add_node:main',
+            'add_two_ints_client = example_add.example_add_client_node:main',
         ],
     },
 )
