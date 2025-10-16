@@ -1,6 +1,5 @@
 from rclpy.node import Node
 import rclpy
-from sensor_msgs.msg import Image
 
 from example_camera_inteface.srv import TakePhoto
 
@@ -9,10 +8,6 @@ class CameraServiceClient(Node):
     def __init__(self, node_name: str):
         super().__init__(node_name)
         
-        self._image_publisher = self.create_publisher(
-            Image, '/image_raw', 10
-        ) 
-        
         self._client_camera_service = self.create_client(
             TakePhoto, "example_camera_service"
         )
@@ -20,13 +15,12 @@ class CameraServiceClient(Node):
         while not self._client_camera_service.wait_for_service(timeout_sec=10.0):
             self.get_logger().warning("warten auf service example_camera_service...")
         self.get_logger().info("Service example_camera_service ist verfügbar.")
-        
-        self._req_camera_service = TakePhoto.Request()
     
-    def send_request(self, take_image: bool):
-        # field name in TakePhoto.srv is `take_photo`
-        self._req_camera_service.take_photo = take_image
-        return self._client_camera_service.call_async(self._req_camera_service)
+    def send_request(self, take_photo: bool):
+        # create a fresh request object each call to avoid side-effects
+        req = TakePhoto.Request()
+        req.take_photo = take_photo
+        return self._client_camera_service.call_async(req)
        
     def destroy_node(self):
         return super().destroy_node()
