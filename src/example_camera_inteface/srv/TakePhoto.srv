@@ -1,0 +1,6 @@
+# Request section
+bool take_photo
+
+---
+# Response section
+sensor_msgs/Image camera_image
