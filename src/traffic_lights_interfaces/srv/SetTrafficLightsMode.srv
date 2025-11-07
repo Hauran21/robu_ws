@@ -1,0 +1,4 @@
+int8 mode #Modus der Verkehrsampel (1...Standart, 2...Standart mit Gelb/Rot, 3...Außer Betrieb, 4...Baustellenmodus)
+---
+int8 mode
+bool success
