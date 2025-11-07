@@ -1,7 +1,8 @@
 from rclpy.node import Node
 import rclpy
 import cv2
-from cv_bridge import CvBridge
+from rcl_interfaces.msg import ParameterDescriptor
+from cv_bridge import CvBridge # Brücke zwischen OpenCV und ROS2 Nachrichten
 from sensor_msgs.msg import Image
 
 from example_camera_inteface.srv import TakePhoto
@@ -10,49 +11,53 @@ class CameraServiceNode(Node):
     def __init__(self, node_name: str):
         super().__init__(node_name)
         
-        self._image_publisher = self.create_publisher(
+        self._cap_publisher = self.create_publisher(
             Image, '/image_raw', 10
         ) 
         
+        self.declare_parameter("resolution",
+                               [640, 480],
+                               ParameterDescriptor(
+                                description="Resolution of the camera image as [width, height]"
+                               ))
+        
+        self.declare_parameter("device",
+                               0, 
+                               ParameterDescriptor(
+                                description="Camera device index [e.g., 0 for /dev/video0]"
+                               ))
+        
+        self._param_device = self.get_parameter("device").get_parameter_value().integer_value
+        self._param_resolution = self.get_parameter("resolution").get_parameter_value().integer_array_value
+        
         self._srv_take_photo = self.create_service(
-            TakePhoto, "example_camera_service", self.take_photo_cb
+            TakePhoto, "take_photo", self.take_photo_cb
         )
         
-        self.declare_parameter("resolution", [640, 480])
-        self.declare_parameter("device", 0)
+        self._cvbridge = CvBridge()
+        self._cap = cv2.VideoCapture("/dev/video" + str(self._param_device))
+        self._cap.set(cv2.CAP_PROP_FRAME_WIDTH, self._param_resolution[0])
+        self._cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self._param_resolution[1])
         
-        self._device = self.get_parameter("device").get_parameter_value().integer_value
-        self._resolution = self.get_parameter("resolution").get_parameter_value().integer_array_value
-        
-      
+        if not self._cap.isOpened():
+            self.get_logger().error(f"Konnte Kamera /dev/video{self._param_device} nicht öffnen.")
+            raise Exception("Kamera konnte nicht geöffnet werden.")
         
     def take_photo_cb(self, request:TakePhoto.Request, response:TakePhoto.Response) -> TakePhoto.Response:
-        if request.take_photo:
-            self.image = cv2.VideoCapture("/dev/video" + str(self._device))
-            self.bridge = CvBridge()
-
-            self.image.set(cv2.CAP_PROP_FRAME_WIDTH, self._resolution[0])
-            self.image.set(cv2.CAP_PROP_FRAME_HEIGHT, self._resolution[1])
-
-            ret, frame = self.image.read()
-            
-            msg = self.bridge.cv2_to_imgmsg(frame, encoding="bgr8")
-            
-            self._image_publisher.publish(msg)
-            response.camera_image = msg
-
-            try:
-                self.image.release()
-            except Exception:
-                pass
-
-            self.get_logger().info("Foto aufgenommen")
-        else:
-            self.get_logger().warn("Kein Foto aufgenommen")
+        
+        ret, frame = self._cap.read()
+        
+        msg = self._cvbridge.cv2_to_imgmsg(frame, encoding="bgr8")
+        
+        self._cap_publisher.publish(msg)
+        response.img = msg
+        #response.msg.data = "Photo taken and published to /image_raw"
 
         return response
 
     def destroy_node(self):
+        if self._cap.isOpened():
+            self._cap.release()
         return super().destroy_node()
 
 def main():

@@ -9,17 +9,15 @@ class CameraServiceClient(Node):
         super().__init__(node_name)
         
         self._client_camera_service = self.create_client(
-            TakePhoto, "example_camera_service"
+            TakePhoto, "take_photo"
         )
         
         while not self._client_camera_service.wait_for_service(timeout_sec=10.0):
             self.get_logger().warning("warten auf service example_camera_service...")
         self.get_logger().info("Service example_camera_service ist verfügbar.")
     
-    def send_request(self, take_photo: bool):
-        # create a fresh request object each call to avoid side-effects
+    def send_request(self):
         req = TakePhoto.Request()
-        req.take_photo = take_photo
         return self._client_camera_service.call_async(req)
        
     def destroy_node(self):
@@ -35,7 +33,7 @@ def main():
             print(f"Fehler beim Erstellen des Nodes: {e}")
             return
 
-        future = node.send_request(True)
+        future = node.send_request()
         #future.add_done_callback(node._handle_response)
         
         rclpy.spin_until_future_complete(node, future)

@@ -1,6 +1,7 @@
 # Request section
-bool take_photo
+# -> Empty request
 
 ---
 # Response section
-sensor_msgs/Image camera_image
+sensor_msgs/Image img
+std_msgs/String msg
