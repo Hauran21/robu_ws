@@ -28,6 +28,7 @@ setup(
     entry_points={
         'console_scripts': [
             'traffic_lights = traffic_lights.traffic_lights_node:main',
+            'traffic_lights_client = traffic_lights.traffic_lights_client:main',
         ],
     },
 )

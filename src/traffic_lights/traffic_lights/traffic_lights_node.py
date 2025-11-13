@@ -63,8 +63,12 @@ class TrafficLightsNode(Node):
         self._timer_tl = self.create_timer(1.0, self._timer_tl_cb)
         
     def _srv_set_tl_mode_cb(self, request:SetTrafficLightsMode.Request, response:SetTrafficLightsMode.Response) -> SetTrafficLightsMode.Response:
-        response.mode = request.mode
+        
+        self._mode = TrafficLightsMode(request.mode)
+        
+        response.mode = self._mode.value
         response.success = True
+        
         return response
         
     def _timer_tl_cb(self): 

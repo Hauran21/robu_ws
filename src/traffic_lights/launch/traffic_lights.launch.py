@@ -16,7 +16,14 @@ def generate_launch_description():
         }]
     )
 
+    node_traffic_lights_client = Node(
+        package='traffic_lighs',
+        executable='traffic_lights_client',
+    )
+
+
     ld = LaunchDescription()
     ld.add_action(arg_mode)
     ld.add_action(node_traffic_lights)
+    ld.add_action(node_traffic_lights_client)
     return ld
