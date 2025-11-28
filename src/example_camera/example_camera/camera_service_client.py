@@ -13,7 +13,7 @@ class CameraServiceClient(Node):
         )
         
         while not self._client_camera_service.wait_for_service(timeout_sec=10.0):
-            self.get_logger().warning("warten auf service example_camera_service...")
+            self.get_logger().warn("warten auf service example_camera_service...")
         self.get_logger().info("Service example_camera_service ist verfügbar.")
     
     def send_request(self):

@@ -7,11 +7,10 @@ class TrafficLightClient(Node):
     def __init__(self, node_name: str):
         super().__init__(node_name)
         
-        # match the server's service name (server registers '/set_traffic_light_mode')
         self._cli_set_traffic_lights = self.create_client(SetTrafficLightsMode, '/set_traffic_light_mode')
 
         while not self._cli_set_traffic_lights.wait_for_service(1.0):
-            self.get_logger().warning("Gernot wartet auf den Service :(")
+            self.get_logger().warn("Gernot wartet auf den Service :(")
 
         self.get_logger().info("Gernot hat den Service gefunden :)")
         
