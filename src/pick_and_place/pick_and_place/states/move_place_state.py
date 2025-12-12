@@ -1,21 +1,28 @@
 from __future__ import annotations
 from ..state_machine import State # -> geht einen ortner zurück und dann in state_machine
 
+from pick_and_place.pick_and_place_node import PickAndPlaceNode
+from std_srvs import SetBool
 
-class IdleState(State):
+
+class MovePlace(State):
     """Prüft ob der Roboter OK ist und startet dannach den Normalbetrieb"""
 
     def __init__(self) -> None:
-        super().__init__("IDLE_STATE")
+        super().__init__("MOVE_PLACE")
         self._counter: int = 0
 
-    def on_enter(self, node) -> None:
+    def on_enter(self, node:PickAndPlaceNode) -> None:
         node.get_logger().info(f"ENTER {self.name}")
         
+        
+        
     def tick(self, node) -> str | None:
-        # Hier könnten sicherheitsrelevante Bedingungen geprüft werden
-        # z.B. Zugang zum Roboter sind versperrt. Alle Sensoren liefern Daten
-        return "START_CONVEYOR"
-
+        if self._future.done():
+            response: SetBool = self._future.result()
+            if response.success:
+                return "RELEASE_OBJECT"
+        return None
+            
     def on_exit(self, node) -> None:
         node.get_logger().info(f"EXIT {self.name}")

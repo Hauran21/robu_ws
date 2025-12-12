@@ -5,11 +5,11 @@ from pick_and_place.pick_and_place_node import PickAndPlaceNode
 from std_srvs import SetBool
 
 
-class StartConveyor(State):
+class StopConveyor(State):
     """Prüft ob der Roboter OK ist und startet dannach den Normalbetrieb"""
 
     def __init__(self) -> None:
-        super().__init__("START_CONVEYOR")
+        super().__init__("STOP_CONVEYOR")
         self._counter: int = 0
 
     def on_enter(self, node:PickAndPlaceNode) -> None:
@@ -18,12 +18,13 @@ class StartConveyor(State):
         request = SetBool.Request()
         request.data = True
         self._future = node._cli_conveyor.call_async(request)
+
         
     def tick(self, node) -> str | None:
         if self._future.done():
             response: SetBool = self._future.result()
             if response.success:
-                return "WAIT_FOR_OBJECT"
+                return "ANALYZE_OBJECT"
         return None
             
     def on_exit(self, node) -> None:
