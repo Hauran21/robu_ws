@@ -5,6 +5,18 @@ from pick_and_place.state_machine import StateMachine
 from std_srvs.srv import SetBool
 from std_msgs.msg import Bool
 
+from pick_and_place.pick_and_place.states.idle_state import IDLE_STATE
+from pick_and_place.pick_and_place.states.conveyor_start_state import START_CONVEYOR
+from pick_and_place.states.wait_for_object_state import WAIT_FOR_OBJECT
+from pick_and_place.states.conveyor_stop_state import STOP_CONVEYOR
+from pick_and_place.states.analyse_object_state import ANALYSE_OBJECT
+from pick_and_place.states.move_to_pick_state import MOVE_TO_PICK
+from pick_and_place.states.grip_object_state import GRIP_OBJECT
+from pick_and_place.states.move_to_place_state import MOVE_TO_PLACE
+from pick_and_place.states.release_object_state import RELEASE_OBJECT
+from pick_and_place.states.return_home_state import RETURN_HOME
+
+
 class PickAndPlaceNode(Node):
     def __init__(self, node_name: str):
         super().__init__(node_name)
@@ -21,7 +33,18 @@ class PickAndPlaceNode(Node):
         
         # States zur State-Machine hinzufügen
         # self.sm.add_state(...)   
-        self.sm.set_initial_state("IDLE")
+        self.sm.set_initial_state("IDLE_STATE")
+        
+        self.sm.add_state(IDLE_STATE())
+        self.sm.add_state(START_CONVEYOR())
+        self.sm.add_state(WAIT_FOR_OBJECT())
+        self.sm.add_state(STOP_CONVEYOR())
+        self.sm.add_state(ANALYSE_OBJECT())
+        self.sm.add_state(MOVE_TO_PICK())
+        self.sm.add_state(GRIP_OBJECT())
+        self.sm.add_state(MOVE_TO_PLACE())
+        self.sm.add_state(RELEASE_OBJECT())
+        self.sm.add_state(RETURN_HOME())
         
         self._cli_conveyor = self.create_client(SetBool, 'conveyor/set_running')
         self.get_logger().info("Warte auf Service conveyor/set_running...")

@@ -19,12 +19,12 @@ class StartConveyor(State):
         request.data = True
         self._future = node._cli_conveyor.call_async(request)
         
-    def tick(self, node) -> str | None:
+    def tick(self, node:PickAndPlaceNode) -> str | None:
         if self._future.done():
             response: SetBool = self._future.result()
             if response.success:
                 return "WAIT_FOR_OBJECT"
         return None
             
-    def on_exit(self, node) -> None:
+    def on_exit(self, node:PickAndPlaceNode) -> None:
         node.get_logger().info(f"EXIT {self.name}")

@@ -6,22 +6,24 @@ from std_srvs import SetBool
 
 
 class AnalyzeObject(State):
-    """Prüft ob der Roboter OK ist und startet dannach den Normalbetrieb"""
+    """Kamera analysiert das detektierte Objekt"""
 
     def __init__(self) -> None:
         super().__init__("ANALYZE_OBJECT")
-        self._counter: int = 0
 
     def on_enter(self, node:PickAndPlaceNode) -> None:
         node.get_logger().info(f"ENTER {self.name}")
+        # Kamera SErvice aufruf >
+        # Kamera erstellt ein Bild vom Objekt
         
-        self.object_color = "red"  # Platzhalter für Farberkennung
-        self.object_pose = (0.5, 0.0, 0.2)  # Platzhalter für Objekterkennung
+    def tick(self, node:PickAndPlaceNode) -> str | None:
+        # 1.)Future-Objekt der Kamera abfragen und warten
+        #    bis die Kamera ein Ergebnis liefert
+        # 2.) Analysie des Bildes (Mit MachineLearning oder mit OpenCV)
+        # 3.) Farbe und Pose de Objekts bestimmen
         
-    def tick(self, node) -> str | None:
-        if self.object_color != None and self.object_pose != None:
-            return "MOVE_PACKAGE"
-        return None
-            
-    def on_exit(self, node) -> None:
+        return "MOVE_TO_PICK"
+
+    def on_exit(self, node:PickAndPlaceNode) -> None:
         node.get_logger().info(f"EXIT {self.name}")
+        #Speicherung des Pose unf Farbe als Eigenschaft meines Kontexts (Node)

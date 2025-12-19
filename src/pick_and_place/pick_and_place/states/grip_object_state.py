@@ -2,7 +2,6 @@ from __future__ import annotations
 from ..state_machine import State # -> geht einen ortner zurück und dann in state_machine
 
 from pick_and_place.pick_and_place_node import PickAndPlaceNode
-from std_srvs import SetBool
 
 
 class GripObject(State):
@@ -17,10 +16,11 @@ class GripObject(State):
         
         
         
-    def tick(self, node) -> str | None:
+    def tick(self, node:PickAndPlaceNode) -> str | None:
         if node.vacum_ok:
-            return "MOVE_PLACE"
+            return "MOVE_TO_PLACE"
+        #TODO Timeout wenn nach einer zeit kein vacum entsteht
         return None
             
-    def on_exit(self, node) -> None:
+    def on_exit(self, node:PickAndPlaceNode) -> None:
         node.get_logger().info(f"EXIT {self.name}")
