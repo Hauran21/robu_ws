@@ -1,35 +1,39 @@
 from __future__ import annotations
+
 from abc import ABC, abstractmethod
 
 
-class State(ABC): # von der klasse abc gegerbt abstract base class (damit @abstractmethod funktioniert)
-    """Basisklasse für alle Zustände der State-Machine."""
+class State(ABC):
+    """Abstrakte Basisklasse für alle Zustände der State-Machine."""
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str):
         self.name = name
 
     def on_enter(self, node) -> None:
-        """Wird einmalig beim Eintritt in den Zustand ausgeführt."""
+        """Eingangsaktion - wird einmalig beim Eintritt in den Zustand ausgeführt."""
         pass
 
-    def on_exit(self, node) -> None:    
-        """Wird einmalig beim Verlassen des Zustands ausgeführt."""
+    def on_exit(self, node) -> None:
+        """Ausgangsaktion - wird einmalig beim Verlassen des Zustands ausgeführt."""
         pass
 
-    @abstractmethod # tick muss später überschrieben werden -> wenn man einen state programmiert muss man eine tick funktion erstellen
+    @abstractmethod
     def tick(self, node) -> str | None:
         """
-        Wird zyklisch aufgerufen.
-        Muss entweder None (im Zustand bleiben)
-        oder den Namen des nächsten States zurückgeben.
+        Zustandsaktion + Übergangslogik.
+        Wird zyklisch (im Timer) aufgerufen.
+
+        Rückgabe:
+            - None       → im aktuellen Zustand bleiben
+            - "STATE_X"  → Übergang zu STATE_X
         """
         ...
 
 
 class StateMachine:
-    """Verwalten der States + Ablaufsteuerung."""
+    """Einfache State-Machine, die States verwaltet und Übergänge ausführt."""
 
-    def __init__(self, node) -> None:
+    def __init__(self, node):
         self._node = node
         self._states: dict[str, State] = {}
         self._current_state: State | None = None
@@ -43,7 +47,7 @@ class StateMachine:
         self._current_state.on_enter(self._node)
 
     def step(self) -> None:
-        """Soll aus dem ROS2-Timer aufgerufen werden."""
+        """Ein Tick der State-Machine - z.B. aus einem ROS2-Timer aufgerufen."""
         if self._current_state is None:
             return
 
@@ -53,11 +57,10 @@ class StateMachine:
             # Ausgangsaktion
             self._current_state.on_exit(self._node)
 
-            old = self._current_state.name
+            old_name = self._current_state.name
             self._current_state = self._states[next_name]
-
             self._node.get_logger().info(
-                f"Zustandswechsel: {old} → {next_name}"
+                f"Zustandswechsel: {old_name} → {next_name}"
             )
 
             # Eingangsaktion
