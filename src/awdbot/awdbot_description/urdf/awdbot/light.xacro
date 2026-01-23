@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">  
+  <!-- Defaults -->
+  <xacro:property name="led_radius_default" value="0.001"/>
+  <xacro:property name="led_on_color_default"  value="0.5 0.5 0.5 1"/>
+  <xacro:property name="led_off_color_default" value="0 0 0 1"/>
+  <xacro:property name="led_range_default"     value="0.1"/>
+  <xacro:property name="led_intensity_default" value="0.1"/>
+  <xacro:property name="led_direction_default" value="0 0 0"/>
+  <xacro:property name="led_rpy_default" value="0 0 0"/>
+
+  <!-- Einzel-LED mit Light -->
+  <xacro:macro name="led_with_light" params="
+    name parent x y z 
+    radius:=${led_radius_default}
+    emissive_rgba:=${led_on_color_default}
+    light_rgba:=${led_on_color_default}
+    light_range:=${led_range_default}
+    light_intensity:=${led_intensity_default}
+    light_direction:=${led_direction_default}
+    light_rpy:=${led_rpy_default}
+    ">
+
+    <link name="${name}">
+      <inertial>
+        <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+        <mass value="5e-5"/>
+        <inertia
+          ixx="7.2e-10" ixy="0.0" ixz="0.0"
+          iyy="7.2e-10" iyz="0.0"
+          izz="7.2e-10"/>
+      </inertial>
+      <visual>
+        <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+        <geometry><sphere radius="${radius}"/></geometry>
+        <material name="grey"/>
+      </visual>
+      <collision>
+        <origin xyz="${x} ${y} ${z}" rpy="0 0 0"/>
+        <geometry><sphere radius="${radius}"/></geometry>
+      </collision>
+    </link>
+
+    <joint name="${name}_fixed" type="fixed">
+      <parent link="${parent}"/>
+      <child link="${name}"/>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+    </joint>
+
+    <!-- Gazebo-Materialerweiterung (SDF): hier ist emissive gültig -->
+    <!-- <gazebo reference="${name}">
+      <material>
+        <ambient>0.05 0.05 0.05 1</ambient>
+        <diffuse>0.8 0.8 0.8 1</diffuse>
+        <emissive>${emissive_rgba}</emissive>
+      </material>
+    </gazebo> -->
+
+    <!-- Gazebo-Light am LED-Link -->
+    <gazebo reference="${name}">
+    <!-- <light type="spot" name="${name}_light"> -->
+      <light type="spot" name="${name}_light">
+        <!-- <pose relative_to="${parent}">${x} ${y} ${z} 0 0 0</pose> -->
+        <!-- <pose>${x} ${y} ${z} ${light_pose_angular}</pose> -->
+        <pose>${x} ${y} ${z} ${light_rpy}</pose>
+        <!-- <pose>${x} ${y+0.05} ${z-0.02} 1.57 0 0</pose> -->
+        <diffuse>${light_rgba}</diffuse>
+        <specular>${light_rgba}</specular>
+        <attenuation>
+          <range>${light_range}</range>
+          <constant>0.5</constant>
+          <linear>0.02</linear>
+          <quadratic>0.001</quadratic>
+        </attenuation>
+        <cast_shadows>false</cast_shadows>
+        <intensity>${light_intensity}</intensity>
+
+        <!-- <direction>0 0 -1</direction> -->
+        <direction>${light_direction}</direction>
+        <spot>
+        <inner_angle>${90 * 3.14159265/180.0}</inner_angle>
+        <outer_angle>${100 * 3.14159265/180.0}</outer_angle>
+        <falloff>1.0</falloff>
+        </spot>
+      </light>
+    </gazebo>
+  </xacro:macro>
+
+
+  <!-- 8er-Strip -->
+  <xacro:macro name="led_strip8_with_lights" params="
+      side parent
+      x y z dx
+      radius:=${led_radius_default}
+      on_color:=${led_on_color_default}
+      off_color:=${led_off_color_default}
+      light_range:=${led_range_default}
+      light_direction:=${led_direction_default}
+      light_intensity:=${led_intensity_default}
+      light_rpy:=${led_rpy_default}
+      on0:=1 on1:=1 on2:=1 on3:=1 on4:=1 on5:=1 on6:=1 on7:=1">
+
+    <!-- Helper für eine LED i -->
+    <xacro:macro name="one_led_idx" params="i on_flag">
+      <xacro:property name="yy" value="${y + i*dx}"/>
+      <!-- String -> Bool: '1', 'true', 'True' => True -->
+      <xacro:property name="is_on" value="${str(on_flag) in ['1','true','True']}"/>
+      <xacro:property name="em" value="${ on_color if is_on else off_color }"/>
+      <xacro:property name="inten" value="${ 1.0 if is_on else 0.0 }"/>
+
+      <xacro:led_with_light
+          name="LED_${side}_${i}"
+          parent="${parent}"
+          x="${x}"
+          y="${yy}"
+          z="${z}"
+          radius="${radius}"
+          emissive_rgba="${em}"
+          light_rgba="${em}"
+          light_range="${light_range}"
+          light_intensity="${inten}"
+          light_direction="${light_direction}"
+          light_rpy="${light_rpy}"/>
+    </xacro:macro>
+
+    <!-- 8 LEDs -->
+    <xacro:one_led_idx i="0" on_flag="${on0}"/>
+    <xacro:one_led_idx i="1" on_flag="${on1}"/>
+    <xacro:one_led_idx i="2" on_flag="${on2}"/>
+    <xacro:one_led_idx i="3" on_flag="${on3}"/>
+    <xacro:one_led_idx i="4" on_flag="${on4}"/>
+    <xacro:one_led_idx i="5" on_flag="${on5}"/>
+    <xacro:one_led_idx i="6" on_flag="${on6}"/>
+    <xacro:one_led_idx i="7" on_flag="${on7}"/>
+  </xacro:macro>
+
+</robot>

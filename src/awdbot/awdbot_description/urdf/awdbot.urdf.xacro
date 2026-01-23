@@ -176,7 +176,7 @@
     <joint name="camera_joint" type="fixed">
         <parent link="base_link"/>
         <child link="camera_link"/>
-        <origin xyz="${chassis_length/2} 0 ${chassis_height/2+camera_height/2}" rpy="0  1.570796327 0"/>
+        <origin xyz="${chassis_length/2} 0 ${chassis_height/2+camera_height/2}" rpy="0 1.2 0"/>
         <axis xyz="0 0 0"/>
     </joint>
 
@@ -186,4 +186,16 @@
       <origin xyz="0 0 ${chassis_height/2 + lidar_height-0.01}" rpy="0 0 0"/>
       <axis xyz="0 0 1"/>
     </joint>
+
+    <xacro:include filename="awdbot/light.xacro"/>
+
+    <xacro:led_strip8_with_lights
+      side="R" parent="base_link"
+      x="${chassis_length/2-0.05}" y="-0.04" z="${chassis_height/2+0.1}" dx="0.01"
+      on_color="1.0 1.0 1.0 1.0" off_color="0.0 0.0 0.0 1.0"
+      light_range="0.5"
+      on0="1" on1="1" on2="1" on3="1" on4="1" on5="1" on6="1" on7="1"
+      light_direction="0 0 0"
+      light_rpy="${-45*3.141/180} 0 ${90*3.141/180}"/>
+
 </robot>

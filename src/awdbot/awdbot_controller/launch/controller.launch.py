@@ -51,15 +51,15 @@ def generate_launch_description():
                         "/controller_manager"
                 ]
             ),
-            Node(
-                package="awdbot_controller",
-                executable="diffdrive_config_controller",
-                name="diffdrivectrl",
-                parameters=[
-                    {"wheel_radius": wheel_radius,
-                    "wheel_separation": wheel_separation,
-                    "use_sim_time": use_sim_time}]
-            )
+            # Node(
+            #     package="awdbot_controller",
+            #     executable="diffdrive_config_controller",
+            #     name="diffdrivectrl",
+            #     parameters=[
+            #         {"wheel_radius": wheel_radius,
+            #         "wheel_separation": wheel_separation,
+            #         "use_sim_time": use_sim_time}]
+            # )
         ]
     )
 
