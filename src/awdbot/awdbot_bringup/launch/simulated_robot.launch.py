@@ -54,10 +54,16 @@ def generate_launch_description():
         parameters=[{"use_sim_time": True}]
     )
     
+    line_follower = Node(
+        package="awdbot_line_follower",
+        executable="line_follower_node",
+    )
+    
     return LaunchDescription([
         model_arg,
         world_name_arg,
         gazebo,
         controller,
         rviz,
+        #line_follower,
     ])
