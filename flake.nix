@@ -17,21 +17,66 @@
         };
       in {
         devShells.default = pkgs.mkShell {
-          name = "Example project";
+          name = "ROS2 Jazzy Workspace";
           packages = [
+            # Build and package management
             pkgs.colcon
-            # ... other non-ROS packages
-            (with pkgs.rosPackages.humble; buildEnv {
+            pkgs.cmake
+            pkgs.python3
+            
+            # Python libraries for development
+            pkgs.python3Packages.numpy
+            pkgs.python3Packages.opencv4
+            pkgs.python3Packages.pyyaml
+            
+            # Development tools
+            pkgs.git
+            pkgs.gcc
+            pkgs.pkg-config
+            
+            (with pkgs.rosPackages.jazzy; buildEnv {
               paths = [
+                # ROS2 core
                 ros-core
-                # ... other ROS packages
+                
+                # Visualization and tools
+                rviz2
+                robot-state-publisher
+                joint-state-publisher-gui
+                xacro
+                
+                # Control and simulation
+                ros2-control
+                controller-manager
+                ros-gz
+                
+                # Build tools and generators
+                ament-cmake               
+                ament-cmake-core
+                #ament-python
+                python-cmake-module
+                rosidl-default-generators
+                rosidl-default-runtime
+                
+                # Common ROS2 packages
+                std-msgs
+                std-srvs
+                sensor-msgs
+                geometry-msgs
+                
+                # Testing and linting
+                ament-lint-auto
+                ament-flake8
+                ament-pep257
               ];
             })
           ];
         };
       });
   nixConfig = {
-    extra-substituters = [ "https://ros.cachix.org" ];
-    extra-trusted-public-keys = [ "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo=" ];
+    # extra-substituters = [ "https://ros.cachix.org" ];
+    # extra-trusted-public-keys = [ "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo=" ];
+    # extra-substituters = https://attic.iid.ciirc.cvut.cz/ros
+    # extra-trusted-public-keys = ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q=
   };
 }
