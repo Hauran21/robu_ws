@@ -33,6 +33,10 @@
             pkgs.git
             pkgs.gcc
             pkgs.pkg-config
+            pkgs.libxkbcommon
+
+            pkgs.python3Packages.argcomplete
+            pkgs.python3Packages.setuptools
             
             (with pkgs.rosPackages.jazzy; buildEnv {
               paths = [
@@ -71,6 +75,20 @@
               ];
             })
           ];
+          
+          shellHook = ''
+            export ROS_DISTRO=jazzy
+
+            source ${pkgs.rosPackages.jazzy.ros-core}/setup.bash
+            [ -f ./install/setup.bash ] && source ./install/setup.bash
+
+            source ${pkgs.bash-completion}/etc/profile.d/bash_completion.sh
+
+            # IMPORTANT: explicit ROS2 argcomplete registration
+            if command -v register-python-argcomplete >/dev/null 2>&1; then
+              eval "$(register-python-argcomplete ros2)"
+            fi
+          '';
         };
       });
   nixConfig = {
